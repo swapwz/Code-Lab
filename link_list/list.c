@@ -116,4 +116,22 @@ list_t* list_merge(list_t *a, list_t *b)
     return head;   
 }
 
+list_t* list_delete(list_t *head, int data)
+{
+    list_t **cur;
 
+    for (cur = &head; *cur != NULL; )
+    {
+        list_t *entry = *cur;
+	if (entry->data == data)
+	{
+            *cur = entry->next;
+            free(entry);
+	}
+	else
+	{
+            cur = &entry->next;
+	}
+    }
+    return head;
+}

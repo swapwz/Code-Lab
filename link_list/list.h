@@ -6,7 +6,7 @@ typedef struct List {
     struct List *next;
 } list_t;
 
-extern list_t* list_delete(int data);
+extern list_t* list_delete(list_t *head, int data);
 extern list_t* list_init(int data);
 extern list_t* list_insert(list_t *head, int data);
 extern void list_show(list_t *head);

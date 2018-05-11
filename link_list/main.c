@@ -29,6 +29,13 @@ int main(int argc, char **argv)
     head = list_merge(a, b);
     list_show(head);
 
+    head = list_delete(head, 10);
+    list_show(head);
+
+    head = list_delete(head, 1);
+    list_show(head);
+
+
     list_free(head);
 
     return 0;
