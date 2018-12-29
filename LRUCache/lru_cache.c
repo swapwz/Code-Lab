@@ -96,9 +96,9 @@ static void delKeyHash(LRUCache *obj, int key)
             free(hash);
         }
         else
-	    {
+        {
             cur = &hash->first;
-	    }
+        }
     }
     obj->hash[entry] = hash_first;
 }
