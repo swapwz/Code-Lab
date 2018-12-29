@@ -26,18 +26,6 @@ typedef struct {
     KVData *front; /* position to delete */
 } LRUCache;
 
-/* show internal of data */
-void show(KVData *front)
-{
-    printf("*******************************\r\n");
-    for (front=front->next; front != NULL; front = front->next)
-    {
-        printf("(%d, %d)\r\n", front->key, front->value);
-    }
-    printf("*******************************\r\n");
-}
-
-
 /* get next available key hash */
 static Hash* getAvailiableHash(LRUCache *obj, int key)
 {
@@ -118,19 +106,16 @@ static void delKeyHash(LRUCache *obj, int key)
 static KVData * getDataRef(LRUCache *obj, int key)
 {
     Hash *hash;
-    KVData *data;
 
     hash = getKeyHash(obj, key);   
     if (hash != NULL)
     {
-        data = hash->ref;
+        return hash->ref;
     }
     else
     {
-        data = NULL;
+        return NULL;
     }
-
-    return data;
 }
 
 LRUCache* lRUCacheCreate(int capacity) {
@@ -226,8 +211,6 @@ void lRUCachePut(LRUCache* obj, int key, int value) {
             new_data->prev = rear;
             obj->rear = new_data;
         }
-
-        show(obj->front);
         /* already the newest node, do nothing */
         return;
     }
@@ -236,9 +219,6 @@ void lRUCachePut(LRUCache* obj, int key, int value) {
     new_data = (KVData *) malloc(sizeof(KVData));
     if (NULL == new_data)
         return;
-    
-    new_data->key = key;
-    new_data->value = value;
 
     cap = obj->capacity;
     used = obj->used;
@@ -268,6 +248,8 @@ void lRUCachePut(LRUCache* obj, int key, int value) {
     }
     
     used++;
+    new_data->key = key;
+    new_data->value = value;
     obj->rear->next = new_data;
     new_data->prev = rear;
     new_data->next = NULL;
@@ -280,7 +262,6 @@ void lRUCachePut(LRUCache* obj, int key, int value) {
     {
         hash->ref = new_data;
     }
-    show(obj->front);
 }
 
 void lRUCacheFree(LRUCache* obj) {
@@ -307,21 +288,49 @@ void lRUCacheFree(LRUCache* obj) {
  * lRUCachePut(obj, key, value);
  * lRUCacheFree(obj);
  */
+static void show(LRUCache *obj)
+{
+    KVData *front = obj->front;
+
+    for (front = front->next; front != NULL; front = front->next)
+    {
+        printf("(%d, %d)->", front->key, front->value);
+    }
+    printf("NULL\r\n");
+}
+
 int main(void)
 {
-    LRUCache *obj = lRUCacheCreate(2);
+    LRUCache *obj = lRUCacheCreate(5);
 
-    printf("%d\r\n", lRUCacheGet(obj, 0));
+    printf("GET 0: %d\r\n", lRUCacheGet(obj, 0));
 
+    printf("PUT (2,1)\r\n");
     lRUCachePut(obj, 2, 1);
+
+    printf("PUT (2,2)\r\n");
     lRUCachePut(obj, 2, 2);
 
-    printf("get %d\n", lRUCacheGet(obj, 2));
+    printf("GET 2: %d\n", lRUCacheGet(obj, 2));
 
+    printf("PUT (1,1)\r\n");
     lRUCachePut(obj, 1, 1);
+
+    printf("PUT (4,1)\r\n");
     lRUCachePut(obj, 4, 1);
 
-    printf("get %d\n", lRUCacheGet(obj, 2));
+    printf("PUT (14,14)\r\n");
+    lRUCachePut(obj, 14, 14);
+
+    printf("PUT (24,24)\r\n");
+    lRUCachePut(obj, 24, 24);
+
+    printf("GET 2: %d\n", lRUCacheGet(obj, 2));
+
+    printf("GET 14: %d\n", lRUCacheGet(obj, 14));
+
+    printf("Show internal data list\r\n");
+    show(obj);
 
     lRUCacheFree(obj);
  
